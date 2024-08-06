@@ -1,4 +1,5 @@
 from typing import Optional
+from functions import FuncData
 
 # class State
 #   - Holds the current information needed to translate statements into machine instructions
@@ -9,7 +10,7 @@ from typing import Optional
 #       - cur_instruction: Stores the current instruction number, for use such as jumping to functions
 
 class State:
-    def __init__(self, def_vars: dict[str, int] = {}, def_funcs: dict[str, int] = {}):
+    def __init__(self, def_vars: dict[str, int] = {}, def_funcs: dict[str, FuncData] = {}):
         self.var_dict = def_vars
         self.func_dict = def_funcs
 
@@ -37,13 +38,13 @@ class State:
         
         return self.func_dict[func_name]
     
-    def add_func(self, func_name: str , instr: int) -> Optional[int]:
+    def add_func(self, func_name: str , func_data: FuncData) -> Optional[FuncData]:
         if func_name in self.func_dict:
             return None
         
-        self.func_dict[func_name] = instr
+        self.func_dict[func_name] = func_data
 
-        return instr
+        return func_data
     
     def claim_mem_addr(self):
         claimed_addr = self.cur_mem_addr
