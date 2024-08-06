@@ -23,7 +23,9 @@ class Program (Statement):
                 cur_func_data.start_instr = state.cur_instruction
                 translated_instrs.extend(body_instr.translate(state))
 
+            # Add the return jmp
             translated_instrs.append(JmpInstruction(cur_func_data.ret_instr_addr))
+            state.cur_instruction += 1
 
         return translated_instrs
     

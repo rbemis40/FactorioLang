@@ -20,7 +20,7 @@ class VarDeclarationStatement (Statement):
         if var_addr == None:
             raise SyntaxError(f'Invalid redeclaration of "{self.var_name}"')
 
-        return [] # Return an list since it does not result in an instruction
+        return [] # Return an empty list since it does not result in an instruction
 
 
 
@@ -81,20 +81,3 @@ class FuncDeclStatement (Statement):
         # that piece of func_data yet (will be done in translate_body)
 
         return []
-
-    def translate_body(self, state: State) -> list[Instruction]:
-        # Now we finally know where this function is being stored in memory, so:
-        self.func_data.start_instr = state.cur_instruction
-        
-        func_body_statements = []
-        for statement in self.statements:
-            func_body_statements.extend(statement.translate(state))
-
-        
-        # We also need to add one instruction to jump back to the return address (stored in func_data)
-
-        func_body_statements.append(JmpInstruction(self.func_data.ret_instr_addr))
-        state.cur_instruction += 1
-
-        return func_body_statements
-        
