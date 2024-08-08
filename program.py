@@ -1,4 +1,4 @@
-from state import State
+from compiler import State
 from statements import *
 from expressions import *
 from instructions import *
@@ -22,6 +22,10 @@ class Program (Statement):
             for body_instr in cur_func_data.body_statements:
                 cur_func_data.start_instr = state.cur_instruction
                 translated_instrs.extend(body_instr.translate(state))
+
+            # TODO: Throw a proper error if the return instruction for the function is not deteremined
+            if cur_func_data.ret_instr_addr == None:
+                return []
 
             # Add the return jmp
             translated_instrs.append(JmpInstruction(cur_func_data.ret_instr_addr))

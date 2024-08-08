@@ -1,5 +1,5 @@
 from typing import Optional
-from functions import FuncData
+from abc import ABC, abstractmethod
 
 # class State
 #   - Holds the current information needed to translate statements into machine instructions
@@ -9,8 +9,9 @@ from functions import FuncData
 #       - cur_mem_addr: Stores the next memory address that is available for use (such as declaring variables)
 #       - cur_instruction: Stores the current instruction number, for use such as jumping to functions
 
+
 class State:
-    def __init__(self, def_vars: dict[str, int] = {}, def_funcs: dict[str, FuncData] = {}):
+    def __init__(self, def_vars: dict[str, int] = {}, def_funcs: dict[str, 'FuncData'] = {}):
         self.var_dict = def_vars
         self.func_dict = def_funcs
 
@@ -32,13 +33,13 @@ class State:
 
         return addr
     
-    def get_func_instr(self, func_name: str) -> Optional[int]:
+    def get_func_data(self, func_name: str) -> Optional['FuncData']:
         if func_name not in self.func_dict:
             return None
         
         return self.func_dict[func_name]
     
-    def add_func(self, func_name: str , func_data: FuncData) -> Optional[FuncData]:
+    def add_func(self, func_name: str , func_data: 'FuncData') -> Optional['FuncData']:
         if func_name in self.func_dict:
             return None
         
@@ -51,3 +52,28 @@ class State:
         self.cur_mem_addr += 1
 
         return claimed_addr
+    
+class Instruction:
+    def __init__(self, name: str, id: int, args: list[int]):
+        self.name = name
+        self.id = id
+        self.args = args
+
+    def __str__(self) -> str:
+        ret_str = f'I: {self.id}'
+        for i, arg in enumerate(self.args):
+            ret_str += f' {i}: {arg}'
+
+        return ret_str
+
+
+class Statement (ABC):
+    @abstractmethod
+    def translate(self, state) -> list[Instruction]:
+        pass
+
+class FuncData:
+    def __init__(self, body_statements: list[Statement], ret_instr_addr: Optional[int] = None, start_instr: Optional[int] = None):
+        self.body_statements = body_statements
+        self.ret_instr_addr = ret_instr_addr
+        self.start_instr = start_instr

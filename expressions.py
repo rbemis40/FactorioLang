@@ -1,8 +1,8 @@
-from state import State
+from compiler import State
 
 class Expression:
     def get_value(self, state: State) -> int:
-        pass
+        return 0 # TODO: PLACEHOLDER
 
 class SingleValExpression (Expression):
     def __init__(self, val: int):

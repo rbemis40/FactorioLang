@@ -1,15 +1,7 @@
 from abc import ABC, abstractmethod
-from state import State
+from compiler import Statement, Instruction, State, FuncData
 from expressions import Expression
 from instructions import *
-from functions import FuncData
-
-class Statement (ABC):
-    @abstractmethod
-    def translate(self, state: State) -> list[Instruction]:
-        pass
-
-
 
 class VarDeclarationStatement (Statement):
     def __init__(self, var_name: str):
@@ -80,4 +72,14 @@ class FuncDeclStatement (Statement):
         # We still don't know where in the program the first instruction of the function is going to be placed, so we can't update
         # that piece of func_data yet (will be done in translate_body)
 
+        return []
+    
+
+class FuncCallStatement (Statement):
+    def __init__(self, func_name: str):
+        self.func_name = func_name
+
+    def translate(self, state: State) -> list[Instruction]:
+        # First, we need to set the return instruction number so the function returns to the correct spot
+        #TODO: Finish this
         return []
