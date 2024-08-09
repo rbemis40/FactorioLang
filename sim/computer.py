@@ -1,4 +1,4 @@
-from compiler.instructions import *
+from compiler import instructions as comp_instrs
 
 class Computer:
     def __init__(self, num_mem: int):
@@ -21,3 +21,12 @@ class Computer:
             raise IndexError(f'Invalid memory location "{mem_loc}. Must be between 0 and {max_mem_loc}')
         
         self.memory_arr[mem_loc] = new_val
+
+    def reset_mem(self):
+        self.memory_arr = [None for _ in self.memory_arr]
+
+    def execute_instructions(self, instrs: list[comp_instrs.Instruction]):
+        for cur_instr in instrs:
+            match cur_instr.name:
+                case _:
+                    raise ValueError(f'Attempt to execute unknown instruction "{cur_instr.name}"')
