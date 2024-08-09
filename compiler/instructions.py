@@ -1,17 +1,11 @@
 from core import Instruction
 
-# instrs = {
-#     'stop': 1,
-#     'set': 2,
-#     'mov': 5
-# }
-
 
 # This is a temporary instruction that represents a placeholder until the jmp location into a function can be determined at the end of compilation
 class FuncPlaceholderInstruction (Instruction):
     def __init__(self, func_name: str):
         super().__init__('func_placeholder', -1, [])
-        self.func_name = func_name
+        self.func_name: str = func_name
 
 class StopInstruction (Instruction):
     def __init__(self):

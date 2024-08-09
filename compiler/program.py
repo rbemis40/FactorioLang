@@ -5,10 +5,10 @@ from instructions import *
 
 class Program (Statement):
     def __init__(self, statements: list[Statement] = []):
-        self.statements = statements
+        self.statements: list[Statement] = statements
 
     def translate(self, state: State) -> list[Instruction]:
-        translated_instrs = []
+        translated_instrs: list[Instruction] = []
         for statement in self.statements:
             translated_instrs.extend(statement.translate(state))
 

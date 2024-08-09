@@ -11,19 +11,19 @@ from abc import ABC, abstractmethod
 
 class FuncData:
     def __init__(self, name: str, body_statements: list['Statement'], ret_instr_addr: Optional[int] = None, start_instr: Optional[int] = None):
-        self.name = name
-        self.body_statements = body_statements
-        self.ret_instr_addr = ret_instr_addr
-        self.start_instr = start_instr
+        self.name: str = name
+        self.body_statements: list['Statement'] = body_statements
+        self.ret_instr_addr: Optional[int] = ret_instr_addr
+        self.start_instr: Optional[int] = start_instr
 
 class State:
     def __init__(self, def_vars: dict[str, int] = {}, def_funcs: dict[str, FuncData] = {}):
-        self.var_dict = def_vars
-        self.func_dict = def_funcs
+        self.var_dict: dict[str, int] = def_vars
+        self.func_dict: dict[str, FuncData] = def_funcs
 
-        self.cur_mem_addr = 1
+        self.cur_mem_addr: int = 1
 
-        self.cur_instruction = 1
+        self.cur_instruction: int = 1
 
     def get_var_addr(self, var_name: str) -> Optional[int]:
         if var_name not in self.var_dict:
@@ -61,9 +61,9 @@ class State:
     
 class Instruction:
     def __init__(self, name: str, id: int, args: list[int]):
-        self.name = name
-        self.id = id
-        self.args = args
+        self.name: str = name
+        self.id: int = id
+        self.args: list[int] = args
 
     def __str__(self) -> str:
         ret_str = f'I: {self.id}'
