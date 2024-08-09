@@ -1,4 +1,4 @@
-from compiler import Instruction
+from core import Instruction
 
 # instrs = {
 #     'stop': 1,

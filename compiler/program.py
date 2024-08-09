@@ -1,4 +1,4 @@
-from compiler import State
+from core import State
 from statements import *
 from expressions import *
 from instructions import *

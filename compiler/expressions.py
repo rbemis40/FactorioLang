@@ -1,4 +1,4 @@
-from compiler import State
+from core import State
 
 class Expression:
     def get_value(self, state: State) -> int:

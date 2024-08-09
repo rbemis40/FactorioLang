@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from compiler import Statement, Instruction, State, FuncData
+from core import Statement, Instruction, State, FuncData
 from expressions import Expression
 from instructions import *
 
