@@ -19,15 +19,14 @@ class Program (Statement):
             # For each function, we need to translate their body statements,
             # and then append a jmp instruction to return to the caller
             
+            cur_func_data.start_instr = state.cur_instruction # Notes where in memory the first instruction of the funciton will be
             for body_instr in cur_func_data.body_statements:
-                cur_func_data.start_instr = state.cur_instruction
                 translated_instrs.extend(body_instr.translate(state))
 
-            # TODO: Throw a proper error if the return instruction for the function is not deteremined
             if cur_func_data.ret_instr_addr == None:
-                return []
+                raise Exception(f'Unable to translate function "{cur_func_data.name}", unknown return address')
 
-            # Add the return jmp
+            # Add the return jmp to the caller (the instruction # to jump to is stored in memory location ret_instr_addr)
             translated_instrs.append(JmpInstruction(cur_func_data.ret_instr_addr))
             state.cur_instruction += 1
 

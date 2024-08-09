@@ -59,7 +59,7 @@ class FuncDeclStatement (Statement):
     def __init__(self, func_name: str, statements: list[Statement]):
         self.func_name = func_name
         # For now, we create a place holder func_data, because we only figure out the information during translation
-        self.func_data = FuncData(statements)
+        self.func_data = FuncData(func_name, statements)
 
     def translate(self, state: State) -> list[Instruction]:
         # For now, we just update the state to note that the function is now declared
