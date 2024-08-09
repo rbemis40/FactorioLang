@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from core import Statement, Instruction, State, FuncData
-from expressions import Expression
-from instructions import *
+from compiler.core import Statement, Instruction, State, FuncData
+from compiler.expressions import Expression
+from compiler.instructions import *
 
 class VarDeclarationStatement (Statement):
     def __init__(self, var_name: str):

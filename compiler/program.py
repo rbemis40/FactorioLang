@@ -1,7 +1,7 @@
-from core import State
-from statements import *
-from expressions import *
-from instructions import *
+from compiler.core import State
+from compiler.statements import *
+from compiler.expressions import *
+from compiler.instructions import *
 
 class Program (Statement):
     def __init__(self, statements: list[Statement] = []):

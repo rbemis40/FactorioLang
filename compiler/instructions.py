@@ -1,5 +1,4 @@
-from core import Instruction
-
+from compiler.core import Instruction
 
 # This is a temporary instruction that represents a placeholder until the jmp location into a function can be determined at the end of compilation
 class FuncPlaceholderInstruction (Instruction):

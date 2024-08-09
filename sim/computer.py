@@ -1,4 +1,4 @@
-from compiler import instructions as comp_instrs
+import compiler.instructions as comp_instrs
 
 class Computer:
     def __init__(self, num_mem: int):
@@ -28,5 +28,7 @@ class Computer:
     def execute_instructions(self, instrs: list[comp_instrs.Instruction]):
         for cur_instr in instrs:
             match cur_instr.name:
+                case 'set':
+                    print('Set instruction')
                 case _:
                     raise ValueError(f'Attempt to execute unknown instruction "{cur_instr.name}"')
