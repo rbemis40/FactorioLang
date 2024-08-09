@@ -49,7 +49,7 @@ class Computer:
 
     def reset(self) -> None:
         self.memory_arr = [None for _ in self.memory_arr]
-        self.cur_instr_num = 0
+        self.cur_instr_num = 1
         self.stopped = False
 
     def step(self) -> None:
