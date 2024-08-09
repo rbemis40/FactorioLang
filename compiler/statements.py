@@ -15,7 +15,6 @@ class VarDeclarationStatement (Statement):
         return [] # Return an empty list since it does not result in an instruction
 
 
-
 class VarAssignmentStatement (Statement):
     def __init__(self, var_name: str, exp: Expression):
         self.var_name = var_name

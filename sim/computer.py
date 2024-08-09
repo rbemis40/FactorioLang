@@ -64,13 +64,38 @@ class Computer:
             case 'set':
                 self.set_mem_val(cur_instr.args[0], cur_instr.args[1])
                 self.inc_instr_counter()
+            case 'jmp':
+                jmp_loc = self.get_mem_val(cur_instr.args[0])
+                self.set_instr_counter(jmp_loc)
+            case 'math':
+                operation = cur_instr.args[0]
+                left_val = self.get_mem_val(cur_instr.args[1])
+                right_val = self.get_mem_val(cur_instr.args[2])
+
+                result = None
+
+                match operation:
+                    case comp_instrs.MathInstruction.ADD:
+                        result = left_val + right_val
+                    case comp_instrs.MathInstruction.SUB:
+                        result = left_val - right_val
+                    case comp_instrs.MathInstruction.MUL:
+                        result = left_val * right_val
+                    case comp_instrs.MathInstruction.DIV:
+                        result = left_val // right_val
+                    case comp_instrs.MathInstruction.MOD:
+                        result = left_val % right_val
+                    case _:
+                        raise ValueError(f'Invalid math operation {operation}')
+                    
+                store_addr = cur_instr.args[3]
+                self.set_mem_val(store_addr, result)
+
+                self.inc_instr_counter()
             case 'mov':
                 val = self.get_mem_val(cur_instr.args[0])
                 self.set_mem_val(cur_instr.args[1], val)
                 self.inc_instr_counter()
-            case 'jmp':
-                jmp_loc = self.get_mem_val(cur_instr.args[0])
-                self.set_instr_counter(jmp_loc)
             case _:
                 self.stopped = True
                 raise ValueError(f'Attempt to execute unknown instruction "{cur_instr.name}"')            
@@ -78,7 +103,7 @@ class Computer:
     def __str__(self) -> str:
         ret_str = '----------\n'
         
-        ret_str += f'State: {'Stopped' if self.stopped else 'Running'}\n\n'
+        ret_str += f'State: {"Stopped" if self.stopped else "Running"}\n\n'
 
         for i in range(len(self.memory_arr)):
             ret_str += f'Addr {i + 1}: {self.memory_arr[i]}\n'
@@ -94,8 +119,10 @@ class Computer:
                 
 if __name__ == '__main__':
     instrs = [
-        comp_instrs.SetInstruction(1, 1),
-        comp_instrs.MovInstruction(1, 3),
+        comp_instrs.SetInstruction(1, 4),
+        comp_instrs.SetInstruction(2, 1),
+        comp_instrs.SetInstruction(3, 0),
+        comp_instrs.MathInstruction(comp_instrs.MathInstruction.ADD, 2, 3, 3),
         comp_instrs.JmpInstruction(1),
         comp_instrs.StopInstruction()
     ]
