@@ -34,3 +34,12 @@ class MathInstruction (Instruction):
 class MovInstruction (Instruction):
     def __init__(self, from_addr: int, to_addr: int):
         super().__init__('mov', 5, [from_addr, to_addr])
+
+
+class JmpIfInstruction (Instruction):
+    GT = 1
+    LT = 2
+    EQ = 3
+
+    def __init__(self, left_addr: int, right_addr: int, operation: int, jmp_addr: int):
+        super().__init__('jif', 6, [left_addr, right_addr, operation, jmp_addr])

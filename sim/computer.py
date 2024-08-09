@@ -96,6 +96,26 @@ class Computer:
                 val = self.get_mem_val(cur_instr.args[0])
                 self.set_mem_val(cur_instr.args[1], val)
                 self.inc_instr_counter()
+            case 'jif':
+                left_val = self.get_mem_val(cur_instr.args[0])
+                right_val = self.get_mem_val(cur_instr.args[1])
+
+                operation = cur_instr.args[2]
+
+                result = None
+                match operation:
+                    case comp_instrs.JmpIfInstruction.GT:
+                        result = left_val > right_val
+                    case comp_instrs.JmpIfInstruction.LT:
+                        result = left_val < right_val
+                    case comp_instrs.JmpIfInstruction.EQ:
+                        result = left_val == right_val
+
+                if result:
+                    jmp_loc = self.get_mem_val(cur_instr.args[3])
+                    self.set_instr_counter(jmp_loc)
+                else:
+                    self.inc_instr_counter()
             case _:
                 self.stopped = True
                 raise ValueError(f'Attempt to execute unknown instruction "{cur_instr.name}"')            
@@ -119,11 +139,12 @@ class Computer:
                 
 if __name__ == '__main__':
     instrs = [
-        comp_instrs.SetInstruction(1, 4),
-        comp_instrs.SetInstruction(2, 1),
-        comp_instrs.SetInstruction(3, 0),
+        comp_instrs.SetInstruction(1, 4), # Where to jmp to
+        comp_instrs.SetInstruction(2, 1), # What to add by
+        comp_instrs.SetInstruction(3, 0), # Current iteration
+        comp_instrs.SetInstruction(4, 7), # When to stop
         comp_instrs.MathInstruction(comp_instrs.MathInstruction.ADD, 2, 3, 3),
-        comp_instrs.JmpInstruction(1),
+        comp_instrs.JmpIfInstruction(3, 4, comp_instrs.JmpIfInstruction.LT, 1),
         comp_instrs.StopInstruction()
     ]
 
