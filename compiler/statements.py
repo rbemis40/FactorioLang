@@ -54,6 +54,7 @@ class VarMoveStatement (Statement):
         return [MovInstruction(from_addr, to_addr)]    
 
 
+# TODO: Add arguments to functions
 class FuncDeclStatement (Statement):
     def __init__(self, func_name: str, statements: list[Statement]):
         self.func_name = func_name
@@ -79,6 +80,21 @@ class FuncCallStatement (Statement):
         self.func_name = func_name
 
     def translate(self, state: State) -> list[Instruction]:
-        # First, we need to set the return instruction number so the function returns to the correct spot
-        #TODO: Finish this
-        return []
+        # First, ensure that the function being called has been defined
+        func_data = state.get_func_data(self.func_name)
+        if func_data == None:
+            raise Exception(f'Attempt to call undefined function "{self.func_name}"')
+        
+        # Now we need to set the return instruction number so the function returns to the correct spot
+        
+        next_instruction = state.cur_instruction + 2 # Plus 2 because we want to skip the set and jmp instruction when returning
+
+        if func_data.ret_instr_addr == None:
+            raise Exception(f'Attempt to call untranslated function "{self.func_name}"')
+
+        out_instrs: list[Instruction] = [
+            SetInstruction(func_data.ret_instr_addr, next_instruction),
+            FuncPlaceholderInstruction(self.func_name) # Placeholder because we still don't know what instruction # the function will be placed at
+        ]
+
+        return out_instrs
