@@ -10,9 +10,9 @@ from abc import ABC, abstractmethod
 #       - cur_instruction: Stores the current instruction number, for use such as jumping to functions
 
 class FuncData:
-    def __init__(self, name: str, body_statements: list['Statement'], ret_instr_addr: Optional[int] = None, start_instr: Optional[int] = None):
+    def __init__(self, name: str, body_statements: list['Translatable'], ret_instr_addr: Optional[int] = None, start_instr: Optional[int] = None):
         self.name: str = name
-        self.body_statements: list['Statement'] = body_statements
+        self.body_statements: list['Translatable'] = body_statements
         self.ret_instr_addr: Optional[int] = ret_instr_addr
         self.start_instr: Optional[int] = start_instr
 
@@ -72,7 +72,7 @@ class Instruction:
 
         return ret_str
 
-class Statement (ABC):
+class Translatable (ABC):
     @abstractmethod
     def translate(self, state: State) -> list[Instruction]:
         pass

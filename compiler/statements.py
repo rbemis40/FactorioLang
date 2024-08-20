@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-from compiler.core import Statement, Instruction, State, FuncData
+from compiler.core import Translatable, Instruction, State, FuncData
 from compiler.expressions import Expression
 from compiler.instructions import *
 
-class VarDeclarationStatement (Statement):
+class VarDeclarationStatement (Translatable):
     def __init__(self, var_name: str):
         self.var_name = var_name
 
@@ -15,7 +15,7 @@ class VarDeclarationStatement (Statement):
         return [] # Return an empty list since it does not result in an instruction
 
 
-class VarAssignmentStatement (Statement):
+class VarAssignmentStatement (Translatable):
     def __init__(self, var_name: str, exp: Expression):
         self.var_name = var_name
         self.exp = exp
@@ -26,14 +26,14 @@ class VarAssignmentStatement (Statement):
         if var_addr == None:
             raise NameError(f'Unknown variable name "{self.var_name}"')
         
-        exp_value = self.exp.get_value(state) # No need to check for errors because it will raise an exception if invalid
+        exp_value = self.exp.get_value() # No need to check for errors because it will raise an exception if invalid
 
         state.cur_instruction += 1
 
         return [SetInstruction(var_addr, exp_value)]
 
 
-class VarMoveStatement (Statement):
+class VarMoveStatement (Translatable):
     def __init__(self, from_var_name: str, to_var_name: str):
         self.from_var_name = from_var_name
         self.to_var_name = to_var_name
@@ -55,8 +55,8 @@ class VarMoveStatement (Statement):
 
 
 # TODO: Add arguments to functions
-class FuncDeclStatement (Statement):
-    def __init__(self, func_name: str, statements: list[Statement]):
+class FuncDeclStatement (Translatable):
+    def __init__(self, func_name: str, statements: list[Translatable]):
         self.func_name = func_name
         # For now, we create a place holder func_data, because we only figure out the information during translation
         self.func_data = FuncData(func_name, statements)
@@ -75,7 +75,7 @@ class FuncDeclStatement (Statement):
         return []
     
 
-class FuncCallStatement (Statement):
+class FuncCallStatement (Translatable):
     def __init__(self, func_name: str):
         self.func_name = func_name
 

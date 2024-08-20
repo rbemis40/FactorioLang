@@ -3,9 +3,9 @@ from compiler.statements import *
 from compiler.expressions import *
 from compiler.instructions import *
 
-class Program (Statement):
-    def __init__(self, statements: list[Statement] = []):
-        self.statements: list[Statement] = statements
+class Program (Translatable):
+    def __init__(self, statements: list[Translatable] = []):
+        self.statements: list[Translatable] = statements
 
     def translate(self, state: State) -> list[Instruction]:
         translated_instrs: list[Instruction] = []
@@ -32,7 +32,7 @@ class Program (Statement):
 
         return translated_instrs
     
-    def add_statement(self, statement: Statement) -> None:
+    def add_statement(self, statement: Translatable) -> None:
         self.statements.append(statement)
 
 if __name__ == '__main__':
