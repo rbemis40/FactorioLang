@@ -1,5 +1,6 @@
 import compiler.instructions as comp_instrs
 from time import sleep
+from sim.instr_behaviors import handle_instr
 
 class Computer:
     def __init__(self, num_mem: int, instrs: list[comp_instrs.Instruction]):
@@ -58,67 +59,7 @@ class Computer:
 
         cur_instr = self.get_cur_instr()
 
-        match cur_instr.name:
-            case 'stop':
-                self.stopped = True
-            case 'set':
-                self.set_mem_val(cur_instr.args[0], cur_instr.args[1])
-                self.inc_instr_counter()
-            case 'jmp':
-                jmp_loc = self.get_mem_val(cur_instr.args[0])
-                self.set_instr_counter(jmp_loc)
-            case 'math':
-                operation = cur_instr.args[0]
-                left_val = self.get_mem_val(cur_instr.args[1])
-                right_val = self.get_mem_val(cur_instr.args[2])
-
-                result = None
-
-                match operation:
-                    case comp_instrs.MathInstruction.ADD:
-                        result = left_val + right_val
-                    case comp_instrs.MathInstruction.SUB:
-                        result = left_val - right_val
-                    case comp_instrs.MathInstruction.MUL:
-                        result = left_val * right_val
-                    case comp_instrs.MathInstruction.DIV:
-                        result = left_val // right_val
-                    case comp_instrs.MathInstruction.MOD:
-                        result = left_val % right_val
-                    case _:
-                        raise ValueError(f'Invalid math operation {operation}')
-                    
-                store_addr = cur_instr.args[3]
-                self.set_mem_val(store_addr, result)
-
-                self.inc_instr_counter()
-            case 'mov':
-                val = self.get_mem_val(cur_instr.args[0])
-                self.set_mem_val(cur_instr.args[1], val)
-                self.inc_instr_counter()
-            case 'jif':
-                left_val = self.get_mem_val(cur_instr.args[0])
-                right_val = self.get_mem_val(cur_instr.args[1])
-
-                operation = cur_instr.args[2]
-
-                result = None
-                match operation:
-                    case comp_instrs.JmpIfInstruction.GT:
-                        result = left_val > right_val
-                    case comp_instrs.JmpIfInstruction.LT:
-                        result = left_val < right_val
-                    case comp_instrs.JmpIfInstruction.EQ:
-                        result = left_val == right_val
-
-                if result:
-                    jmp_loc = self.get_mem_val(cur_instr.args[3])
-                    self.set_instr_counter(jmp_loc)
-                else:
-                    self.inc_instr_counter()
-            case _:
-                self.stopped = True
-                raise ValueError(f'Attempt to execute unknown instruction "{cur_instr.name}"')            
+        handle_instr(self, cur_instr)            
                 
     def __str__(self) -> str:
         ret_str = '----------\n'
