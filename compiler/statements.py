@@ -15,22 +15,22 @@ class VarDeclarationStatement (Translatable):
         return [] # Return an empty list since it does not result in an instruction
 
 
-class VarAssignmentStatement (Translatable):
-    def __init__(self, var_name: str, exp: Expression):
-        self.var_name = var_name
-        self.exp = exp
+# class VarAssignmentStatement (Translatable):
+#     def __init__(self, var_name: str, exp: Expression):
+#         self.var_name = var_name
+#         self.exp = exp
 
-    def translate(self, state: State) -> list[Instruction]:
-        var_addr = state.get_var_addr(self.var_name)
+#     def translate(self, state: State) -> list[Instruction]:
+#         var_addr = state.get_var_addr(self.var_name)
 
-        if var_addr == None:
-            raise NameError(f'Unknown variable name "{self.var_name}"')
+#         if var_addr == None:
+#             raise NameError(f'Unknown variable name "{self.var_name}"')
         
-        exp_value = self.exp.get_value() # No need to check for errors because it will raise an exception if invalid
+#         exp_value = self.exp.get_value() # No need to check for errors because it will raise an exception if invalid
 
-        state.cur_instruction += 1
+#         state.cur_instruction += 1
 
-        return [SetInstruction(var_addr, exp_value)]
+#         return [SetInstruction(var_addr, exp_value)]
 
 
 class VarMoveStatement (Translatable):
@@ -98,3 +98,32 @@ class FuncCallStatement (Translatable):
         ]
 
         return out_instrs
+    
+
+
+class ExprAssignmentStatement (Translatable):
+    def __init__(self, to_var_name: str, expr: Expression):
+        self.to_var_name: str = to_var_name
+        self.expr: Expression = expr
+
+    def translate(self, state: State) -> list[Instruction]:
+        # First, ensure that the variable has been defined
+
+        var_addr: (int | None) = state.get_var_addr(self.to_var_name)
+        if var_addr == None:
+            raise NameError(f'Unknown variable name "{self.to_var_name}", must be defined before use')
+        
+        # Now we will see if we can simply compute the value of the expression, if we can then we can just translate to a single SET instruction
+        if self.expr.is_computable():
+            expr_val: int = self.expr.get_value()
+            return [SetInstruction(var_addr, expr_val)]
+        
+        # Otherwise, we will have to translate the expression to MATH instructions first, and then MOV that answer into the variable
+        out_instrs: list[Instruction] = self.expr.translate()
+
+        expr_ans_loc: int = self.expr.get_ans_loc()
+
+        out_instrs.append(MovInstruction(expr_ans_loc, var_addr))
+
+        return out_instrs
+ 

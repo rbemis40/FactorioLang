@@ -38,26 +38,6 @@ class Program (Translatable):
 if __name__ == '__main__':
     program = Program()
 
-    test_function = FuncDeclStatement('new_func', [
-        VarDeclarationStatement('func_var'),
-        VarAssignmentStatement('func_var', SingleValExpression(10))
-    ],)
-
-    test_declaration = VarDeclarationStatement('test_var')
-
-    test_expression = SingleValExpression(6)
-    test_assignment = VarAssignmentStatement('test_var', test_expression)
-
-    second_decl = VarDeclarationStatement('second_var')
-    test_move = VarMoveStatement('test_var', 'second_var')
-
-    program.add_statement(test_function)
-    program.add_statement(test_declaration)
-    program.add_statement(test_assignment)
-    program.add_statement(test_assignment)
-    program.add_statement(second_decl)
-    program.add_statement(test_move)
-
     def_state = State()
     translated_prog = program.translate(def_state)
 
