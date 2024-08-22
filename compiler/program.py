@@ -50,6 +50,7 @@ if __name__ == '__main__':
     statements: list[Translatable] = [
         VarDeclarationStatement('test_var'),
         VarDeclarationStatement('expr_var'),
+        ExprAssignmentStatement('expr_var', SingleValExpression(13)),
         ExprAssignmentStatement('test_var', test_expr)
     ]
 
