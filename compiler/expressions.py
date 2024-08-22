@@ -5,10 +5,10 @@ from abc import ABC, abstractmethod
 
 # TODO: Avoid redefining this in statements.py
 class ExpOp (Enum):
-    ADD = 1,
-    SUB = 2,
-    MUL = 3,
-    DIV = 4,
+    ADD = 1
+    SUB = 2
+    MUL = 3
+    DIV = 4
     MOD = 5
 
 class Expression (Translatable):
@@ -31,7 +31,7 @@ class Expression (Translatable):
 
 class SingleValExpression (Expression):
     def __init__(self, val: int):
-        self.val = val
+        self.val: int = val
 
     def translate(self, state: State) -> list[Instruction]:
         # This instruction is necessary if the containing expression is not computable, since MATH instructions require the values to be stored in memory
@@ -43,7 +43,33 @@ class SingleValExpression (Expression):
 
     def get_value(self) -> int:
         return self.val
+
+
+ 
+class VarExpression (Expression):
+    def __init__(self, var_name: str):
+        self.var_name: str = var_name
+
+    def translate(self, state: State) -> list[Instruction]:
+        # Because we already have the stored location (the variable's address), we just have to make sure the variable exists
+
+        var_addr: (int | None) = state.get_var_addr(self.var_name)
+        if var_addr == None:
+            raise NameError(f'Unknown variable name "{self.from_var_name}"')
+
+
+        # There will be no instructions necessary, since the variable already has a place in memory
+        self.set_ans_loc(var_addr)
+
+        return []
+
+    def is_computable(self) -> bool:
+        return False
     
+    def get_value(self) -> int:
+        raise ValueError('Attempted to get value of non-computable expression')
+    
+
 class TreeExpression (Expression):
     def __init__(self, operation: ExpOp, left_exp: Expression, right_exp: Expression):
         self.left_exp: Expression = left_exp
@@ -62,15 +88,15 @@ class TreeExpression (Expression):
         
         out_instrs: list[Instruction] = []
 
-        out_instrs.append(self.left_exp.translate())
-        out_instrs.append(self.right_exp.translate())
+        out_instrs.extend(self.left_exp.translate(state))
+        out_instrs.extend(self.right_exp.translate(state))
 
         # At this point, the two input memory locations should be set up, now we need to set up a place to store the answer
         self.set_ans_loc(state.claim_mem_addr())
 
         # Now we can actually use the math expression
         # TODO: Again, self.operation is using a different operation enum than the MathInstruction, which needs to be resolved
-        out_instrs.append(MathInstruction(self.operation, self.left_exp.get_ans_loc(), self.right_exp.get_ans_loc(), self.get_ans_loc()))
+        out_instrs.append(MathInstruction(self.operation.value, self.left_exp.get_ans_loc(), self.right_exp.get_ans_loc(), self.get_ans_loc()))
 
         return out_instrs
 

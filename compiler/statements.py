@@ -119,7 +119,7 @@ class ExprAssignmentStatement (Translatable):
             return [SetInstruction(var_addr, expr_val)]
         
         # Otherwise, we will have to translate the expression to MATH instructions first, and then MOV that answer into the variable
-        out_instrs: list[Instruction] = self.expr.translate()
+        out_instrs: list[Instruction] = self.expr.translate(state)
 
         expr_ans_loc: int = self.expr.get_ans_loc()
 

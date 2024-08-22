@@ -1,4 +1,4 @@
-from compiler.core import State
+from compiler.core import State, Translatable
 from compiler.statements import *
 from compiler.expressions import *
 from compiler.instructions import *
@@ -36,9 +36,26 @@ class Program (Translatable):
         self.statements.append(statement)
 
 if __name__ == '__main__':
-    program = Program()
+    test_expr = TreeExpression(ExpOp.ADD,
+        TreeExpression(ExpOp.MUL,
+            SingleValExpression(9),
+            SingleValExpression(10)               
+        ),                           
+        TreeExpression(ExpOp.MUL,
+            SingleValExpression(4),
+            VarExpression('expr_var')
+        )                     
+    )
+
+    statements: list[Translatable] = [
+        VarDeclarationStatement('test_var'),
+        VarDeclarationStatement('expr_var'),
+        ExprAssignmentStatement('test_var', test_expr)
+    ]
 
     def_state = State()
+
+    program = Program(statements)
     translated_prog = program.translate(def_state)
 
     for instr in translated_prog:
