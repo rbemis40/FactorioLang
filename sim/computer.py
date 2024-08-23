@@ -79,21 +79,21 @@ class Computer:
 
                 
 if __name__ == '__main__':
-    # I: 2 0: 2 1: 13
-    # I: 2 0: 3 1: 90
-    # I: 2 0: 4 1: 4
-    # I: 4 0: 3 1: 4 2: 2 3: 5
-    # I: 4 0: 1 1: 3 2: 5 3: 6
-    # I: 5 0: 6 1: 1
-    # I: 1
+    #I: 2 0: 2 1: 13
+    #I: 2 0: 3 1: 90
+    #I: 2 0: 4 1: 4
+    #I: 4 0: 3 1: 4 2: 2 3: 4
+    #I: 4 0: 1 1: 3 2: 4 3: 3
+    #I: 5 0: 3 1: 1
+    #I: 1
 
     instrs = [
         comp_instrs.SetInstruction(2, 13),
         comp_instrs.SetInstruction(3, 90),
         comp_instrs.SetInstruction(4, 4),
-        comp_instrs.MathInstruction(3, 4, 2, 5),
-        comp_instrs.MathInstruction(1, 3, 5, 6),
-        comp_instrs.MovInstruction(6, 1),
+        comp_instrs.MathInstruction(3, 4, 2, 4),
+        comp_instrs.MathInstruction(1, 3, 4, 3),
+        comp_instrs.MovInstruction(3, 1),
         comp_instrs.StopInstruction()
     ]
 

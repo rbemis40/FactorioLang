@@ -16,12 +16,15 @@ class Expression (Translatable):
         self.ans_loc: int = 0 # This will be used to store the memory location of the expressions answer for use in other expressions, 0 for placeholder
     
     @abstractmethod
-    def is_computable() -> bool:
+    def is_computable(self) -> bool:
         pass
 
     @abstractmethod
-    def get_value() -> int:
+    def get_value(self) -> int:
         pass
+
+    def unclaim_mem(self, state: State) -> None:
+        return
 
     def set_ans_loc(self, new_loc: int) -> None:
         self.ans_loc = new_loc
@@ -43,9 +46,13 @@ class SingleValExpression (Expression):
 
     def get_value(self) -> int:
         return self.val
+    
+    def unclaim_mem(self, state: State) -> None:
+        state.unclaim_mem_addr(self.get_ans_loc())
 
 
  
+# Note: We can't implement unclaim_mem because the variable may be used elsewhere after the expression
 class VarExpression (Expression):
     def __init__(self, var_name: str):
         self.var_name: str = var_name
@@ -91,6 +98,10 @@ class TreeExpression (Expression):
         out_instrs.extend(self.left_exp.translate(state))
         out_instrs.extend(self.right_exp.translate(state))
 
+        # We can free the sub expression memory addresses, since they have already been computed at this point
+        self.left_exp.unclaim_mem(state)
+        self.right_exp.unclaim_mem(state)
+
         # At this point, the two input memory locations should be set up, now we need to set up a place to store the answer
         self.set_ans_loc(state.claim_mem_addr())
 
@@ -123,3 +134,6 @@ class TreeExpression (Expression):
                 return left_val % right_val
             case _:
                 raise Exception('Unknown expression type')
+            
+    def unclaim_mem(self, state: State) -> None:
+        state.unclaim_mem_addr(self.get_ans_loc())

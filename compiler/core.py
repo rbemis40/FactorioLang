@@ -25,6 +25,9 @@ class State:
 
         self.cur_instruction: int = 1
 
+        self.unclaimed_addrs: set[int] = set() # This will be used to store addresses that have been freed, and so are available, set so we can check if an address is already in it quickly
+
+
     def get_var_addr(self, var_name: str) -> Optional[int]:
         if var_name not in self.var_dict:
             return None
@@ -53,12 +56,24 @@ class State:
 
         return func_data
     
-    def claim_mem_addr(self):
+    def claim_mem_addr(self) -> int:
+        # If there are any formerly used addresses that have been unclaimed, use those first
+        if len(self.unclaimed_addrs) > 0:
+            return self.unclaimed_addrs.pop()
+
+        # Otherwise, use the next available address
         claimed_addr = self.cur_mem_addr
         self.cur_mem_addr += 1
 
         return claimed_addr
     
+    def unclaim_mem_addr(self, addr: int) -> None:
+        # First, we will check if the address has been claimed, if so throw an error since this was probably unintended
+        if (addr >= self.cur_mem_addr) or (addr in self.unclaimed_addrs):
+            raise ValueError(f'Invalid attempt to unclaim address {addr}, not in use')
+        
+        self.unclaimed_addrs.add(addr)
+
 class Instruction:
     def __init__(self, name: str, id: int, args: list[int]):
         self.name: str = name
