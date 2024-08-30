@@ -1,4 +1,9 @@
 import compiler.instructions as comp_instrs
+
+from compiler.program import Program
+from compiler.statements import *
+from compiler.expressions import *
+
 from time import sleep
 from sim.instr_behaviors import handle_instr
 
@@ -79,23 +84,26 @@ class Computer:
 
                 
 if __name__ == '__main__':
-    #I: 2 0: 2 1: 13
-    #I: 2 0: 3 1: 90
-    #I: 2 0: 4 1: 4
-    #I: 4 0: 3 1: 4 2: 2 3: 4
-    #I: 4 0: 1 1: 3 2: 4 3: 3
-    #I: 5 0: 3 1: 1
-    #I: 1
+    program = Program([
+        FuncDeclStatement('test_func', [
+            ExprAssignmentStatement('x', TreeExpression(ExpOp.ADD, 
+                VarExpression('x'),
+                SingleValExpression(1)
+            ))
+        ]),
+        VarDeclarationStatement('x'),
+        ExprAssignmentStatement('x', SingleValExpression(0)),
+        FuncCallStatement('test_func'),
+        FuncCallStatement('test_func'),
+        FuncCallStatement('test_func')
+    ])
 
-    instrs = [
-        comp_instrs.SetInstruction(2, 13),
-        comp_instrs.SetInstruction(3, 90),
-        comp_instrs.SetInstruction(4, 4),
-        comp_instrs.MathInstruction(3, 4, 2, 4),
-        comp_instrs.MathInstruction(1, 3, 4, 3),
-        comp_instrs.MovInstruction(3, 1),
-        comp_instrs.StopInstruction()
-    ]
+    state: State = State()
+    instrs: list[Instruction] = program.translate(state)
+
+    print('Generated Instructions:')
+    for i, cur_instr in enumerate(instrs):
+        print(f'\tInstr {i+1}:  {cur_instr}')
 
     computer = Computer(10, instrs)    
 

@@ -1,7 +1,7 @@
 from compiler.core import State, Translatable, Instruction
 from compiler.instructions import SetInstruction, MathInstruction
 from enum import Enum
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 # TODO: Avoid redefining this in statements.py
 class ExpOp (Enum):
@@ -62,7 +62,7 @@ class VarExpression (Expression):
 
         var_addr: (int | None) = state.get_var_addr(self.var_name)
         if var_addr == None:
-            raise NameError(f'Unknown variable name "{self.from_var_name}"')
+            raise NameError(f'Unknown variable name "{self.var_name}"')
 
 
         # There will be no instructions necessary, since the variable already has a place in memory

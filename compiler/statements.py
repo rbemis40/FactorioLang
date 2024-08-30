@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from compiler.core import Translatable, Instruction, State, FuncData
 from compiler.expressions import Expression
 from compiler.instructions import *

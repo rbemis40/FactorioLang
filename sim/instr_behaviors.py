@@ -79,6 +79,8 @@ def handle_jif(comp: 'Computer', instr: Instruction) -> None:
             result = left_val < right_val
         case JmpIfInstruction.EQ:
             result = left_val == right_val
+        case _:
+            raise ValueError(f'Unknown operation {operation}')
 
     if result:
         jmp_loc = comp.get_mem_val(instr.args[3])
