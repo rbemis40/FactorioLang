@@ -86,23 +86,35 @@ class FuncCallStatement (Translatable):
         
         # Now we need to set the return instruction number so the function returns to the correct spot
         
-        next_instruction = state.cur_instruction + 2 # Plus 2 because we want to skip the set and jmp instruction when returning
+        next_instruction = state.cur_instruction + 3 # Plus 3 because we want to skip the set, placeholder, and jmp instruction when returning
 
         if func_data.ret_instr_addr == None:
             raise Exception(f'Attempt to call untranslated function "{self.func_name}"')
 
+        # We will need to eventually use a SET instruction to determine the location to jmp to, so we claim a memory address for use
+        jmp_mem_addr: int = state.claim_mem_addr()
+
         out_instrs: list[Instruction] = [
             SetInstruction(func_data.ret_instr_addr, next_instruction),
-            FuncPlaceholderInstruction(self.func_name) # Placeholder because we still don't know what instruction # the function will be placed at
-        ]
+            FuncPlaceholderInstruction(self.func_name, jmp_mem_addr), # Placeholder because we still don't know what instruction # the function will be placed at
+            JmpInstruction(jmp_mem_addr)
+        ] 
 
-        return out_instrs
-    
+        # We can immediately free that address since it is only used this one time
+        state.unclaim_mem_addr(jmp_mem_addr)
+
+        # We have to update the placeholder instruction list so that they can easily be replaced later by the correct SetInstruction, the placeholder is the instruction after the next instruction tracked by state
+        state.placeholder_instrs.update({state.cur_instruction + 1: self.func_name})
+                 
+        state.cur_instruction = next_instruction
+
+        return out_instrs                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
 
 class ExprAssignmentStatement (Translatable):
     def __init__(self, to_var_name: str, expr: Expression):
-        self.to_var_name: str = to_var_name
+        self.to_var_name: str = to_var_name          
         self.expr: Expression = expr
 
     def translate(self, state: State) -> list[Instruction]:
@@ -115,6 +127,7 @@ class ExprAssignmentStatement (Translatable):
         # Now we will see if we can simply compute the value of the expression, if we can then we can just translate to a single SET instruction
         if self.expr.is_computable():
             expr_val: int = self.expr.get_value()
+            state.cur_instruction += 1
             return [SetInstruction(var_addr, expr_val)]
         
         # Otherwise, we will have to translate the expression to MATH instructions first, and then MOV that answer into the variable
@@ -123,6 +136,8 @@ class ExprAssignmentStatement (Translatable):
         expr_ans_loc: int = self.expr.get_ans_loc()
 
         out_instrs.append(MovInstruction(expr_ans_loc, var_addr))
+
+        state.cur_instruction += len(out_instrs)
 
         return out_instrs
  

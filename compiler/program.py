@@ -11,8 +11,10 @@ class Program (Translatable):
         translated_instrs: list[Instruction] = []
         for statement in self.statements:
             translated_instrs.extend(statement.translate(state))
+            
 
         translated_instrs.append(StopInstruction())
+        state.cur_instruction += 1
 
         # TODO: Need to now compile and append function statements, also need to update placeholder jmps
         for cur_func_data in state.func_dict.values():
@@ -29,6 +31,16 @@ class Program (Translatable):
             # Add the return jmp to the caller (the instruction # to jump to is stored in memory location ret_instr_addr)
             translated_instrs.append(JmpInstruction(cur_func_data.ret_instr_addr))
             state.cur_instruction += 1
+
+        # Now that all of the function declarations have been generated, we can update the placeholder call statements generated during compilation
+        for placeholder in state.placeholder_instrs.items():
+            instr_index: int = placeholder[0] - 1 # We -1 because instr numbers start at 1, we need 0-indexed 
+            placeholder_func_name: str = placeholder[1]
+
+            placeholder_instr: FuncPlaceholderInstruction = translated_instrs[instr_index] 
+
+            # Override the placeholder instruction with an appropriate set instruction
+            translated_instrs[instr_index] = SetInstruction(placeholder_instr.jmp_addr, state.get_func_data(placeholder_func_name).start_instr)
 
         return translated_instrs
     
